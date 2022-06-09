@@ -18,7 +18,7 @@ filt = {'Name': 'tag:ws_group', 'Values': [groupname]}
 resp = ec2.describe_instances(Filters=[filt])
 
 # Look through the instances in this group. If they do not yet have an assigned
-# hostname, record their ID so a hostanme can be added. If they do have a
+# hostname, record their ID so a hostname can be added. If they do have a
 # hostname, record the hostname so that it is not reused.
 instance_ids = []
 taken_hostnames = set()

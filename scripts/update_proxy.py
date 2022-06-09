@@ -9,8 +9,8 @@ from utils import get_aws_tag
 
 
 # Define parameters.
-KEYPAIR_PATH = '/home/smharper/.ssh/east_keypair.pem'
-PROXY_IPS = ('52.202.229.158', )
+KEYPAIR_PATH = '/home/romano/.ssh/id_rsa'
+PROXY_IPS = ('184.73.99.182', )
 
 # Connect to EC2.
 ec2 = boto3.client('ec2')
@@ -34,7 +34,7 @@ for res in resp['Reservations']:
 out = ''
 for ip, hostname in zip(instance_ips, instance_hostnames):
     out +=  'server {\n'
-    out += f'  server_name {hostname}.openmcworkshop.org;\n'
+    out += f'  server_name {hostname}.openmccourse.org;\n'
     out +=  '  include /etc/nginx/conf.d/templ/server_templ.conf;\n'
     out +=  '  location / {\n'
     out += f'    proxy_pass http://{ip}:8888;\n'
@@ -58,7 +58,7 @@ for inst_ip in PROXY_IPS:
     # SSH into the instance.
     args = ['ssh', '-o', 'UserKnownHostsFile=/dev/null', '-o',
             'StrictHostKeyChecking=no', '-i',
-            '/home/smharper/.ssh/east_keypair.pem', f'ec2-user@{inst_ip}',
+            KEYPAIR_PATH, f'ec2-user@{inst_ip}',
             'bash -i']
     ssh_process = subprocess.Popen(args, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, universal_newlines=True, bufsize=0)

@@ -13,63 +13,34 @@ final AMI doesn't have any scratchwork.
 
 * Launch an AWS EC2 instance
   + You will need to pick an AMI to start from. We used the Ubuntu Server 20.04
-    LTS image for the 2021 ANS Student Conference.
+    LTS image for the 2022 OpenMC NEA Course.
   + Pick an instance type. Recommended: t3a.medium.
   + Increase the storage from the default 8 GB to something large enough for
     nuclear data and output files. 32 GB seems good.
 
 * SSH into the instance
 
-* Install needed apt libraries
-  + sudo apt-get update
-  + sudo apt install g++ cmake libhdf5-dev python3-pip libeigen3-dev gfortran
-  + g++, cmake, and HDF5 are basic OpenMC dependencies
-  + Pip is a good Python package manager
-  + Eigen and a Fortran compiler are required for MOAB
+* Generate an SSH key and add it to the openmc-nea-course GitHub account
+  + ssh-keygen -t ed25519 -C "your_email@example.com"
+  + eval "$(ssh-agent -s)"
+  + ssh-add ~/.ssh/id_ed25519
 
-* Install needed Python libraries
-  + pip3 install numpy pandas uncertainties h5py scipy matplotlib pytest jupyterlab
-
-* Get the nuclear-data libraries
-  + Get the lastest NNDC library from the openmc/tools/ci/download-xs.sh script
-    (for the test suite).
-  + Get a good ENDF/B-VII.1 library from the OpenMC website so we can
-    demonstrate high-temperature cross sections.
-
-* (Optional) Install DAGMC
-  + Follow the steps in the openmc/tools/ci/gha-install-dagmc.sh script
-
-* Checkout the workshop and OpenMC repos
-  + git clone https://github.com/mit-crpg/openmc-workshop.git
-  + git submodule init; git submodule update
-
-* Install OpenMC
-  + cmake -H. -Bbuild -Doptimize=on -DCMAKE_PREFIX_PATH=/home/ubuntu/DAGMC -DCMAKE_INSTALL_PREFIX=/home/ubuntu/openmc-workshop/openmc/install
-  + make; make install
-  + Set the PATH, LD_LIBRARY_PATH, PYTHONPATH, and OPENMC_CROSS_SECTIONS
-    environment variables in the .bashrc file.
+* Run install script
+  + Copy (scp/sftp) the setup_ami.sh script to the server
+  + Look through setup_ami.sh and see if any changes are needed
+  + Run setup_ami.sh
 
 * Configure Jupyter
   + Note: many of these instructions come from
     https://jupyter-server.readthedocs.io/en/latest/operators/public-server.html
-  + jupyter server --generate-config
-  + Set up a password
-    + (In a Python shell) from jupyter_server.auth import passwd; passwd()
-    + My default: mcrules + In the ~/.jupyter/jupyter_server_config.py file: set the
-      c.ServerApp.password attribute
+  + Set up a password with 'jupyter server password'
   + Modify the ~/.jupyter/jupyter_server_config.py file
     + c.ServerApp.allow_origin = '*'
     + c.ServerApp.allow_remote_access = True
     + c.ServerApp.ip = '*'
-    + c.ServerApp.open_browser = False
     + c.ServerApp.port = 8888
     + c.ServerApp.trust_xheaders = True
     + c.ConnectionFileMixin.ip = '*'
-
-* Add the run_jupyter.sh script to the home directory
-  + Make sure it is executable with chmod +x run_jupyter.sh
-  + (When you start an instance from this image, you will be able to run this
-    script to start Jupyter Lab and save the text output to a log file.)
 
 * Create the AMI
   + Go to the AWS web console and stop the instance. (This step might be

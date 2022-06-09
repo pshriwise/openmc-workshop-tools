@@ -46,12 +46,12 @@ hosts to quickly add new instances if needed.) The proxy server can also perform
   + For example: https://youtu.be/B62QSbPhh1s
 
 * Set up an EC2 instance for the NGINX proxy server
-  + The Amazon Linux 2 AMI is a good AMI for this server.
+  + The Amazon Linux 2 AMI is a good AMI for this server (default user: ec2-user)
   + Open the HTTP and HTTPS traffic in the security settings
   + If you're using ACM, make sure you use an instance type that supports Nitro
     Enclave.
   + Install nginx
-    + (With the Amazon Linux AMI) amazon-linux-extras install nginx1
+    + (With the Amazon Linux AMI) sudo amazon-linux-extras install nginx1
   + Make sure nginx is running
     + sudo service nginx status
     + (If necessary) sudo service nginx start
@@ -77,13 +77,13 @@ hosts to quickly add new instances if needed.) The proxy server can also perform
     http://foo.openmcworkshop.org). This should again show the NGINX test page.
 
 * Set configuration files
-  + You may need to modify the "nginx.conf" file. An example file is included
+  + You may need to modify the "/etc/nginx/nginx.conf" file. An example file is included
     in the openmc-workshop-tools repo.
   + The nginx.conf file should have the line,
-    "include /etc/nginx/default.d/*.conf". This line means that we can put
-    the .conf files that specify the workshop proxy in the /etc/nginx/default.d
+    "include /etc/nginx/conf.d/*.conf". This line means that we can put
+    the .conf files that specify the workshop proxy in the /etc/nginx/conf.d
     directory.
-  + Make the /etc/nginx/default.d/templ subdirectory. This is where we will
+  + Make the /etc/nginx/conf.d/templ subdirectory. This is where we will
     store template NGINX configurations that will be included in the .conf
     files.
   + Add the the "loc_templ.conf" and "server_templ.conf" files (from the

@@ -13,9 +13,10 @@ import boto3
 
 
 # Define parameters.
-IMAGE_ID = 'ami-07191599e4fac17b0'
-KEYPAIR_NAME = 'east_keypair'
-SECURITY_GROUP = 'sg-4022533c'
+#IMAGE_ID = 'ami-0479c7fcf536b157c' # NEA Course
+IMAGE_ID = 'ami-0a7819cfcb08b9d71'
+KEYPAIR_NAME = 'X1 Extreme 2'
+SECURITY_GROUP = 'sg-130bcb6b'
 
 # Connect to EC2.
 ec2 = boto3.client('ec2')
@@ -29,7 +30,7 @@ resp = ec2.run_instances(
     ImageId=IMAGE_ID,
     MinCount=n_instances,
     MaxCount=n_instances,
-    InstanceType='t3a.medium',
+    InstanceType='c6i.large',
     KeyName=KEYPAIR_NAME,
     SecurityGroupIds=(SECURITY_GROUP, ),
     TagSpecifications=[{

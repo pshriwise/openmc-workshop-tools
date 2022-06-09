@@ -7,7 +7,7 @@ import boto3
 
 
 # Define parameters.
-KEYPAIR_PATH = '/home/smharper/.ssh/east_keypair.pem'
+KEYPAIR_PATH = '/home/romano/.ssh/id_rsa'
 BRANCH_NAME = 'origin/ans_student_2021'
 
 # Connect to EC2.
@@ -34,13 +34,13 @@ for res in resp['Reservations']:
 for inst_ip in instance_ips:
     args = ['ssh', '-o', 'UserKnownHostsFile=/dev/null', '-o',
             'StrictHostKeyChecking=no', '-i', KEYPAIR_PATH,
-            f'ubuntu@{inst_ip}', 'bash -i']
+            f'ubuntu@{inst_ip}', 'bash -i -l']
     ssh_process = subprocess.Popen(args, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, universal_newlines=True, bufsize=0)
-    ssh_process.stdin.write('cd openmc-workshop\n')
-    ssh_process.stdin.write('git fetch origin\n')
-    ssh_process.stdin.write(f'git checkout {BRANCH_NAME}\n')
-    ssh_process.stdin.write('cd ..\n')
+    #ssh_process.stdin.write('cd openmc-course\n')
+    #ssh_process.stdin.write('git fetch origin\n')
+    #ssh_process.stdin.write(f'git checkout {BRANCH_NAME}\n')
+    #ssh_process.stdin.write('cd ..\n')
     ssh_process.stdin.write('./run_jupyter.sh\n')
     ssh_process.stdin.write('exit\n')
     ssh_process.stdin.close()
