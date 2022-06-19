@@ -9,8 +9,8 @@ from utils import get_aws_tag
 
 
 # Define parameters.
-KEYPAIR_PATH = '/home/romano/.ssh/id_rsa'
-PROXY_IPS = ('184.73.99.182', )
+KEYPAIR_PATH = '/home/pshriwise/.ssh/dawn.pem'
+PROXY_IPS = ('44.207.34.193', )
 
 # Connect to EC2.
 ec2 = boto3.client('ec2')
@@ -34,7 +34,7 @@ for res in resp['Reservations']:
 out = ''
 for ip, hostname in zip(instance_ips, instance_hostnames):
     out +=  'server {\n'
-    out += f'  server_name {hostname}.openmccourse.org;\n'
+    out += f'  server_name {hostname}.openmcworkshops.org;\n'
     out +=  '  include /etc/nginx/conf.d/templ/server_templ.conf;\n'
     out +=  '  location / {\n'
     out += f'    proxy_pass http://{ip}:8888;\n'

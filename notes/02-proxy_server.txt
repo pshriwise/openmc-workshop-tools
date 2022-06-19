@@ -100,6 +100,8 @@ hosts to quickly add new instances if needed.) The proxy server can also perform
     any prefix, e.g. example.conf) with contents that look like this (replace
     the {jupyter_instance_ip} with the private IP address of the instance that's
     running Jupyter Lab):
+  + In the ec2 console, make sure that both the proxy server instance and workshop
+    instance have the jupyter lab port (888) open for TCP traffic.
 server {
   server_name example0.openmcworkshop.org;
   include /etc/nginx/conf.d/templ/server_templ.conf;

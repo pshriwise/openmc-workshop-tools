@@ -7,7 +7,7 @@ import boto3
 
 
 # Define parameters.
-KEYPAIR_PATH = '/home/romano/.ssh/id_rsa'
+KEYPAIR_PATH = '/home/pshriwise/.ssh/dawn.pem'
 BRANCH_NAME = 'origin/ans_student_2021'
 
 # Connect to EC2.
