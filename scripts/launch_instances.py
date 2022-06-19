@@ -13,8 +13,8 @@ import boto3
 
 
 # Define parameters.
-#IMAGE_ID = 'ami-02ccd03bb57182153' # ONCORE Meeting
-IMAGE_ID = 'ami-0479c7fcf536b157c' # NEA Course
+IMAGE_ID = 'ami-00c959547bc61ae57' # ONCORE Meeting
+#IMAGE_ID = 'ami-0479c7fcf536b157c' # NEA Course
 #IMAGE_ID = 'ami-0a7819cfcb08b9d71'
 KEYPAIR_NAME = 'dawn'
 SECURITY_GROUP = 'sg-080029ec94784d7ee'
