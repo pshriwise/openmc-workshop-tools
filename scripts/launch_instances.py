@@ -11,37 +11,43 @@ import sys
 
 import boto3
 
+from configparser import ConfigParser
+
+config = ConfigParser()
+config.read('workshop_config.ini')
 
 # Define parameters.
-IMAGE_ID = 'ami-07191599e4fac17b0'
-KEYPAIR_NAME = 'east_keypair'
-SECURITY_GROUP = 'sg-4022533c'
-
+AMI = config['ec2'].get('ami')
+KEYPAIR_NAME = config['ec2'].get('keypair_name')
+SECURITY_GROUP = config['ec2'].get('security_group')
+INSTANCE_TYPE = config['ec2'].get('instance_type','t3a.medium')
+GROUPNAME = config['workshop'].get('group_name', 'openmc-workshop')
 # Connect to EC2.
 ec2 = boto3.client('ec2')
 
 # Get the group name and number of instances from commandline args.
-groupname = sys.argv[1]
-n_instances = int(sys.argv[2])
+n_instances = int(sys.argv[1])
 
 # Launch the instances.
 resp = ec2.run_instances(
-    ImageId=IMAGE_ID,
+    ImageId=AMI,
     MinCount=n_instances,
     MaxCount=n_instances,
-    InstanceType='t3a.medium',
+    InstanceType=INSTANCE_TYPE,
     KeyName=KEYPAIR_NAME,
     SecurityGroupIds=(SECURITY_GROUP, ),
     TagSpecifications=[{
       'ResourceType': 'instance',
-      'Tags': [{'Key': 'ws_group', 'Value': groupname}]
+      'Tags': [{'Key': 'ws_group', 'Value': GROUPNAME}]
     }],
     )
 
+print('------ Request Response ------')
 print(resp)
-print()
+print('------ Request Response ------\n')
 
 for inst in resp['Instances']:
-    print(inst['InstanceId'])
-    print(inst['PrivateIpAddress'])
-    print()
+    print('------')
+    print(f'Instance ID: {inst["InstanceId"]}')
+    print(f'Private IP: {inst["PrivateIpAddress"]}')
+    print('------\n')

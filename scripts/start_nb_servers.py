@@ -5,19 +5,22 @@ import sys
 
 import boto3
 
+from configparser import ConfigParser
+
+config = ConfigParser()
+config.read('workshop_config.ini')
 
 # Define parameters.
-KEYPAIR_PATH = '/home/smharper/.ssh/east_keypair.pem'
-BRANCH_NAME = 'origin/ans_student_2021'
+KEYPAIR_PATH = config['ec2']['keypair_path']
+BRANCH_NAME = config['repo']['branch_name']
+GROUPNAME = config['workshop'].get('group_name', 'openmc-workshop')
+REPO_DIR = config['repo'].get('repo_location', '~/openmc-workshop')
 
 # Connect to EC2.
 ec2 = boto3.client('ec2')
 
-# Get the group name from the commandline.
-groupname = sys.argv[1]
-
 # Get the instances with the ws_group tag set to the given group name.
-filt = {'Name': 'tag:ws_group', 'Values': [groupname]}
+filt = {'Name': 'tag:ws_group', 'Values': [GROUPNAME]}
 resp = ec2.describe_instances(Filters=[filt])
 
 # Get the public IP addresses for each running instance.
@@ -37,7 +40,9 @@ for inst_ip in instance_ips:
             f'ubuntu@{inst_ip}', 'bash -i']
     ssh_process = subprocess.Popen(args, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, universal_newlines=True, bufsize=0)
-    ssh_process.stdin.write('cd openmc-workshop\n')
+    ssh_process.stdin.write('source ~/.bashrc\n')
+    ssh_process.stdin.write('source ~/.profile\n')
+    ssh_process.stdin.write(f'cd {REPO_DIR}\n')
     ssh_process.stdin.write('git fetch origin\n')
     ssh_process.stdin.write(f'git checkout {BRANCH_NAME}\n')
     ssh_process.stdin.write('cd ..\n')
