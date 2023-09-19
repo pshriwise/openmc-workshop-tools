@@ -18,3 +18,5 @@ workflow is:
 
  7: Run update_proxy.py so that the proxy server(s) will send web traffic to the
     appropriate machines.
+
+ 8: After the workshop is complete, run stop_intances.py and then (optionally) terminate_instances.py.
