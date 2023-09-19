@@ -1,20 +1,17 @@
 """Checkout the latest version of the workshop repo on each instance."""
-
 import subprocess
-import sys
 
 import boto3
 
+from utils import aws_config, EC2InstanceStatus
 
-# Define parameters.
-KEYPAIR_PATH = '/home/smharper/.ssh/east_keypair.pem'
-BRANCH_NAME = 'origin/ans_student_2021'
-
-# Connect to EC2.
+# Connect to EC2
 ec2 = boto3.client('ec2')
 
-# Get the group name from the commandline.
-groupname = sys.argv[1]
+# Define configuration parameters
+groupname = aws_config['workshop']['group_name']
+BRANCH_NAME = aws_config['repo']['branch_name']
+KEYPAIR_PATH = aws_config['ec2']['keypair_path']
 
 # Get the instances with the ws_group tag set to the given group name.
 filt = {'Name': 'tag:ws_group', 'Values': [groupname]}
@@ -25,7 +22,7 @@ instance_ips = []
 for res in resp['Reservations']:
     for inst in res['Instances']:
         # Ignore instances that are not running.
-        if inst['State']['Code'] != 16:
+        if inst['State']['Code'] != EC2InstanceStatus.RUNNING:
             continue
 
         instance_ips.append(inst['PublicIpAddress'])

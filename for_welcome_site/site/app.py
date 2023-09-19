@@ -3,7 +3,6 @@ import random
 import boto3
 from flask import Flask, render_template, request, make_response
 
-
 ec2 = boto3.client('ec2')
 app = Flask(__name__)
 
@@ -38,7 +37,7 @@ def get_instance():
                 continue
 
             hostname = get_aws_tag(inst['Tags'], 'ws_hostname')
-            hostname = 'https://' + hostname + '.openmcworkshop.org'
+            hostname = 'https://' + hostname + '.openmcworkshops.org'
             available_instances.append((
                 inst['InstanceId'],
                 hostname,

@@ -1,13 +1,12 @@
 """Start Jupyter Lab servers on the AWS instances."""
-from configparser import ConfigParser
 import subprocess
-import sys
 
 import boto3
 
-from utils import aws_config, EC2InstanceStatus
+from util import aws_config
 
-# Define parameters.
+
+# Define parameters
 KEYPAIR_PATH = aws_config['ec2']['keypair_path']
 BRANCH_NAME = aws_config['repo']['branch_name']
 GROUPNAME = aws_config['workshop'].get('group_name', 'openmc-workshop')
@@ -25,7 +24,7 @@ instance_ips = []
 for res in resp['Reservations']:
     for inst in res['Instances']:
         # Ignore instances that are not running.
-        if inst['State']['Code'] != EC2InstanceStatus.RUNNING:
+        if inst['State']['Code'] != 16:
             continue
 
         instance_ips.append(inst['PublicIpAddress'])
@@ -37,13 +36,9 @@ for inst_ip in instance_ips:
             f'ubuntu@{inst_ip}', 'bash -i']
     ssh_process = subprocess.Popen(args, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, universal_newlines=True, bufsize=0)
-    ssh_process.stdin.write('source ~/.bashrc\n')
-    ssh_process.stdin.write('source ~/.profile\n')
-    ssh_process.stdin.write(f'cd {REPO_DIR}\n')
-    ssh_process.stdin.write('git fetch origin\n')
-    ssh_process.stdin.write(f'git checkout {BRANCH_NAME}\n')
-    ssh_process.stdin.write('cd ..\n')
-    ssh_process.stdin.write('./run_jupyter.sh\n')
+    ssh_process.stdin.write(f'cd {REPO_DIR} \n')
+    ssh_process.stdin.write(f'ls \n')
+    ssh_process.stdin.write(f'git status -uno \n')
     ssh_process.stdin.write('exit\n')
     ssh_process.stdin.close()
     ssh_process.stdout.close()

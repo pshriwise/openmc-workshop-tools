@@ -1,22 +1,19 @@
 """Update the NGINX proxy configuration for the given group of instances."""
-
 import subprocess
-import sys
 
 import boto3
 
-from utils import get_aws_tag
-
+from utils import get_aws_tag, aws_config, EC2InstanceStatus
 
 # Define parameters.
-KEYPAIR_PATH = '/home/smharper/.ssh/east_keypair.pem'
-PROXY_IPS = ('52.202.229.158', )
+KEYPAIR_PATH = aws_config['ec2'].get('keypair_path')
+PROXY_IPS = (aws_config['ec2'].get('proxy_ip'),)
 
 # Connect to EC2.
 ec2 = boto3.client('ec2')
 
 # Get the group name from the commandline.
-groupname = sys.argv[1]
+groupname = aws_config['workshop'].get('group_name')
 
 # Get the instances with the ws_group tag set to the given group name.
 filt = {'Name': 'tag:ws_group', 'Values': [groupname]}
@@ -27,6 +24,9 @@ instance_ips = []
 instance_hostnames = []
 for res in resp['Reservations']:
     for inst in res['Instances']:
+        # ignore stopped/terminated instances
+        if inst['State']['Code'] != EC2InstanceStatus.RUNNING:
+            continue
         instance_ips.append(inst['PrivateIpAddress'])
         instance_hostnames.append(get_aws_tag(inst['Tags'], 'ws_hostname'))
 
@@ -34,7 +34,7 @@ for res in resp['Reservations']:
 out = ''
 for ip, hostname in zip(instance_ips, instance_hostnames):
     out +=  'server {\n'
-    out += f'  server_name {hostname}.openmcworkshop.org;\n'
+    out += f'  server_name {hostname}.openmcworkshops.org;\n'
     out +=  '  include /etc/nginx/conf.d/templ/server_templ.conf;\n'
     out +=  '  location / {\n'
     out += f'    proxy_pass http://{ip}:8888;\n'
@@ -58,7 +58,8 @@ for inst_ip in PROXY_IPS:
     # SSH into the instance.
     args = ['ssh', '-o', 'UserKnownHostsFile=/dev/null', '-o',
             'StrictHostKeyChecking=no', '-i',
-            '/home/smharper/.ssh/east_keypair.pem', f'ec2-user@{inst_ip}',
+            KEYPAIR_PATH,
+            f'ec2-user@{inst_ip}',
             'bash -i']
     ssh_process = subprocess.Popen(args, stdin=subprocess.PIPE,
         stdout=subprocess.PIPE, universal_newlines=True, bufsize=0)
