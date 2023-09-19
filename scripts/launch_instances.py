@@ -6,22 +6,18 @@ makes it easier to e.g handle machines for workshop hosts differently than
 machines for participants.
 
 """
-
 import sys
 
 import boto3
 
-from configparser import ConfigParser
-
-config = ConfigParser()
-config.read('workshop_config.ini')
+from utils import aws_config
 
 # Define parameters.
-AMI = config['ec2'].get('ami')
-KEYPAIR_NAME = config['ec2'].get('keypair_name')
-SECURITY_GROUP = config['ec2'].get('security_group')
-INSTANCE_TYPE = config['ec2'].get('instance_type','t3a.medium')
-GROUPNAME = config['workshop'].get('group_name', 'openmc-workshop')
+AMI = aws_config['ec2'].get('ami')
+KEYPAIR_NAME = aws_config['ec2'].get('keypair_name')
+SECURITY_GROUP = aws_config['ec2'].get('security_group')
+INSTANCE_TYPE = aws_config['ec2'].get('instance_type','t3a.medium')
+GROUPNAME = aws_config['workshop'].get('group_name', 'openmc-workshop')
 # Connect to EC2.
 ec2 = boto3.client('ec2')
 

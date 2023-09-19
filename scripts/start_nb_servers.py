@@ -1,20 +1,17 @@
 """Start Jupyter Lab servers on the AWS instances."""
-
+from configparser import ConfigParser
 import subprocess
 import sys
 
 import boto3
 
-from configparser import ConfigParser
-
-config = ConfigParser()
-config.read('workshop_config.ini')
+from utils import aws_config, EC2InstanceStatus
 
 # Define parameters.
-KEYPAIR_PATH = config['ec2']['keypair_path']
-BRANCH_NAME = config['repo']['branch_name']
-GROUPNAME = config['workshop'].get('group_name', 'openmc-workshop')
-REPO_DIR = config['repo'].get('repo_location', '~/openmc-workshop')
+KEYPAIR_PATH = aws_config['ec2']['keypair_path']
+BRANCH_NAME = aws_config['repo']['branch_name']
+GROUPNAME = aws_config['workshop'].get('group_name', 'openmc-workshop')
+REPO_DIR = aws_config['repo'].get('repo_location', '~/openmc-workshop')
 
 # Connect to EC2.
 ec2 = boto3.client('ec2')
@@ -28,7 +25,7 @@ instance_ips = []
 for res in resp['Reservations']:
     for inst in res['Instances']:
         # Ignore instances that are not running.
-        if inst['State']['Code'] != 16:
+        if inst['State']['Code'] != EC2InstanceStatus.RUNNING:
             continue
 
         instance_ips.append(inst['PublicIpAddress'])

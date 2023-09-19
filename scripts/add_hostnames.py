@@ -1,22 +1,13 @@
 """Add ws_hostname tags to Jupyter instances."""
-
-import sys
-
 import boto3
 
-from utils import get_aws_tag
+from utils import aws_config, get_aws_tag, EC2InstanceStatus
 
-from configparser import ConfigParser
-
-config = ConfigParser()
-config.read('workshop_config.ini')
-
-# Connect to EC2.
+# Connect to EC2
 ec2 = boto3.client('ec2')
 
-# Get the group name from the commandline.
-
-GROUPNAME = config['workshop'].get('group_name', 'openmc-workshop')
+# Get the group name from the commandline
+GROUPNAME = aws_config['workshop'].get('group_name', 'openmc-workshop')
 
 # Get the instances with the ws_group tag set to the given group name.
 filt = {'Name': 'tag:ws_group', 'Values': [GROUPNAME]}
@@ -30,7 +21,9 @@ taken_hostnames = set()
 for res in resp['Reservations']:
     for inst in res['Instances']:
         # ignore terminated instances
-        if inst['State']['Code'] == 48:
+        if inst['State']['Code'] == EC2InstanceStatus.TERMINATED:
+            continue
+        if inst['State']['Code'] != EC2InstanceStatus.RUNNING:
             continue
         hostname = get_aws_tag(inst['Tags'], 'ws_hostname')
 
