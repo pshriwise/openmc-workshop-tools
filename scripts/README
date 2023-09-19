@@ -1,6 +1,8 @@
 These scripts are used to manage a set of AWS instances for the workshop. The
 workflow is:
 
+ 0: Fill out all of the fields in the empty workshop_config.ini file for this workshop.
+
  1: (no scripts for this) start the proxy server(s) and the server for the URL
     app.
 
