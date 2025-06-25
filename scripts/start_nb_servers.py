@@ -42,7 +42,7 @@ for inst_ip in instance_ips:
     ssh_process.stdin.write(f'cd {REPO_DIR}\n')
     ssh_process.stdin.write('git fetch origin\n')
     ssh_process.stdin.write(f'git checkout {BRANCH_NAME}\n')
-    ssh_process.stdin.write('cd ..\n')
+    ssh_process.stdin.write('cd ~\n')
     ssh_process.stdin.write('./run_jupyter.sh\n')
     ssh_process.stdin.write('exit\n')
     ssh_process.stdin.close()
