@@ -12,7 +12,7 @@ PROXY_IPS = (aws_config['ec2'].get('proxy_ip'),)
 # Connect to EC2.
 ec2 = boto3.client('ec2')
 
-# Get the group name from the commandline.
+# Get the group name from the config.
 groupname = aws_config['workshop'].get('group_name')
 
 # Get the instances with the ws_group tag set to the given group name.
@@ -53,7 +53,7 @@ for inst_ip in PROXY_IPS:
     args = ['scp', '-o', 'UserKnownHostsFile=/dev/null', '-o',
             'StrictHostKeyChecking=no', '-i', KEYPAIR_PATH,
             f'{groupname}.conf', f'ec2-user@{inst_ip}:']
-    subprocess.run(args)
+    subprocess.run(args, check=True)
 
     # SSH into the instance.
     args = ['ssh', '-o', 'UserKnownHostsFile=/dev/null', '-o',
@@ -67,8 +67,11 @@ for inst_ip in PROXY_IPS:
     # Move the .conf file to the appropriate directory.
     ssh_process.stdin.write(f'sudo mv {groupname}.conf /etc/nginx/conf.d/\n')
 
-    # Tell NGINX to reload the configuration.
-    ssh_process.stdin.write(f'sudo service nginx reload\n')
+    # Test nginx configuration before reload
+    ssh_process.stdin.write('sudo nginx -t\n')
+
+    # Reload nginx only if test succeeds
+    ssh_process.stdin.write('if [ $? -eq 0 ]; then sudo systemctl reload nginx; else echo "NGINX config test failed"; fi\n')
 
     ssh_process.stdin.close()
     ssh_process.stdout.close()

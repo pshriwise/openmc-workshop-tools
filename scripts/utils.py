@@ -3,7 +3,7 @@ from enum import IntEnum
 
 
 aws_config = ConfigParser()
-aws_config.read('workshop_config.ini')
+aws_config.read('ossfe-2026.conf')
 
 
 class EC2InstanceStatus(IntEnum):
